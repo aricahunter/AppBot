@@ -11,5 +11,6 @@ var rtm = new RtmClient(bot_token);
 rtm.start();
 
 rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
+  //message.text is what the message is and what we'll want to feed to watson to figure out response
   rtm.sendMessage("Hello!", message.channel);
 });
