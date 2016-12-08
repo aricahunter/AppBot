@@ -1,5 +1,5 @@
 var watson = require('watson-developer-cloud');
-var username = process.env.WATSON_USERNAME_KEY,
+var username = process.env.WATSON_USERNAME,
     password = process.env.WATSON_PASSWORD
 
 var conversation = watson.conversation({
