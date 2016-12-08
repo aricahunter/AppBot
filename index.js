@@ -1,0 +1,15 @@
+//call to google search api for images
+//https://www.googleapis.com/customsearch/v1?q=meow&searchType=image&key=AIzaSyBr5Od5yAtrOOQhzvXtTrUoaqOQtrRg-I4&cx=009751422889135684132:7melntwcipq
+
+
+var RtmClient = require('@slack/client').RtmClient;
+var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
+
+var bot_token = 'xoxb-114027271459-efDcuN4ZZb054YAsPWayHtyt' || '';
+
+var rtm = new RtmClient(bot_token);
+rtm.start();
+
+rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
+  rtm.sendMessage("Hello!", message.channel);
+});
