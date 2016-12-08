@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@slack/client": "^3.7.0"
+    "@slack/client": "^3.7.0",
+    "watson-developer-cloud": "^2.13.1"
   }
 }
