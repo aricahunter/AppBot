@@ -26,15 +26,30 @@ function getImages(text) {
   });
 }
 
+function postXmsData(data) {
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
+    method: "POST",
+    json: true,
+    headers: {
+        "content-type": "application/json",
+    },
+    body: JSON.stringify(data)
+  }, function(error, response, body) {
+    console.log(error)
+  });
+}
+
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
   WatsonWrapper.sendMessage(message.text, context, function(err, response) {
     if (err) {
       rtm.sendMessage("Error asking watson", message.channel);
     }
     else{
-    // console.log(response.response);
-    context = response.context;
-    rtm.sendMessage(response.response, message.channel);
+      // console.log(response.response);
+      context = response.context;
+      console.log(context);
+      rtm.sendMessage("hello", message.channel);
     }
   });
   //message.text is what the message is and what we'll want to feed to watson to figure out response
