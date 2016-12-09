@@ -1,5 +1,3 @@
-//call to google search api for images
-
 var request = require("request");
 var RtmClient = require('@slack/client').RtmClient;
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
@@ -18,6 +16,18 @@ WatsonWrapper.initConversation( function(error, responseContext) {
   context = responseContext;
   oldContext = responseContext;
 });
+
+function createImage(watson_response){
+  var object_to_search;
+  var image;
+
+  for(var k in watson_response["entities"]){
+    if(k['entity'] == "foods") {
+      object_to_search = k[entity]['value'];
+    }
+  }
+  return getImages(object_to_search);
+} 
 
 function getImages(text) {
   request({
@@ -49,20 +59,25 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
       rtm.sendMessage("Error asking watson", message.channel);
     }
     else{
-      // How to call the entities
-      // entities = watson_response.entities;
-      // if(entities.length > 0){
-      //   console.log("There are entities detected!");
-      //   console.log(JSON.stringify(entities, null, 2));
-      // }
+      //Check for change in context variable. If changed, call XMS endpoint
       context = watson_response.context;
+  
+      //If user wants to create an image, call google images api
+      if (context["created_image"] == 1){
+        var image = createImage(watson_response);
+        rtm.sendMessage(image, message.channel);
+      }
+
+      //If user accepted an image, then
+
       for(var k in context) {
-        if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
+        if (k != "conversation_id" && k != "system" && k != "create_image" && context[k] != oldContext[k]){    
           postXmsData({k: context[k]});
         }
       }
       oldContext = context;
 
+      //Check if Watson doesn't reply.
       if(watson_response.response == ""){
         response = "I'm sorry, I don't know how to respond to that.";
       }
