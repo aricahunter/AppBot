@@ -9,6 +9,7 @@ var bot_token = process.env.SLACK_KEY;
 var google_token = process.env.GOOGLE_SEARCH_KEY;
 
 var rtm = new RtmClient(bot_token);
+console.log("Starting chatbot...");
 rtm.start();
 var context;
 

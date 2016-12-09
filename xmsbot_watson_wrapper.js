@@ -21,6 +21,7 @@ initConversation = function(done) {
             }
 
             else{
+                console.log('Context successfully seeded.');
                 done(null, response["context"]);
             }
     });
