@@ -45,32 +45,34 @@ function postXmsData(data) {
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
-    if (err) {
-      rtm.sendMessage("Error asking watson", message.channel);
-    }
-    else{
-      // How to call the entities
-      // entities = watson_response.entities;
-      // if(entities.length > 0){
-      //   console.log("There are entities detected!");
-      //   console.log(JSON.stringify(entities, null, 2));
-      // }
-      context = watson_response.context;
-      for(var k in context) {
-        if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
-          postXmsData({k: context[k]});
+    if (message.username != "slackbot" && message.name != "U0X7N65B5") {
+      if (err) {
+        rtm.sendMessage("Error asking watson", message.channel);
+      }
+      else{
+        // How to call the entities
+        // entities = watson_response.entities;
+        // if(entities.length > 0){
+        //   console.log("There are entities detected!");
+        //   console.log(JSON.stringify(entities, null, 2));
+        // }
+        context = watson_response.context;
+        for(var k in context) {
+          if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
+            postXmsData({k: context[k]});
+          }
         }
-      }
-      oldContext = context;
+        oldContext = context;
 
-      if(watson_response.response == ""){
-        response = "I'm sorry, I don't know how to respond to that.";
-      }
+        if(watson_response.response == ""){
+          response = "I'm sorry, I don't know how to respond to that.";
+        }
 
-      else {
-        response = watson_response.response;
+        else {
+          response = watson_response.response;
+        }
+        rtm.sendMessage("http://2dopeboyz.com/wp-content/uploads/2015/11/meow-the-jewels-random.jpg", message.channel);
       }
-      rtm.sendMessage(response, message.channel);
     }
   });
   //message.text is what the message is and what we'll want to feed to watson to figure out response
