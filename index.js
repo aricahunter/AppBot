@@ -18,14 +18,7 @@ WatsonWrapper.initConversation( function(error, responseContext) {
 });
 
 function createImage(message, watson_response){
-  var object_to_search;
-  var image;
-
-  for(var k in watson_response["entities"]){
-    if(k['entity'] == "foods") {
-      object_to_search = k[entity]['value'];
-    }
-  }
+  var object_to_search = watson_response.context["delivery_item"];
   getImages(message, object_to_search);
 } 
 
@@ -36,6 +29,7 @@ function getImages(message, text) {
   }, function(error, response, body) {
     //This returns the first image result
     // return json.items[0].link;
+    json = JSON.parse(body);
     rtm.sendMessage(json.items[0].link, message.channel);
   });
 }
