@@ -49,8 +49,9 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
     else{
       // console.log(response.response);
       context = response.context;
-      console.log(context);
-      rtm.sendMessage("hello", message.channel);
+      entities = response.entities;
+      console.log(response);
+      rtm.sendMessage(response.response, message.channel);
     }
   });
   //message.text is what the message is and what we'll want to feed to watson to figure out response
