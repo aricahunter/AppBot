@@ -17,7 +17,7 @@ WatsonWrapper.initConversation( function(error, responseContext) {
   oldContext = responseContext;
 });
 
-function createImage(watson_response){
+function createImage(message, watson_response){
   var object_to_search;
   var image;
 
@@ -26,16 +26,17 @@ function createImage(watson_response){
       object_to_search = k[entity]['value'];
     }
   }
-  return getImages(object_to_search);
+  getImages(message, object_to_search);
 } 
 
-function getImages(text) {
+function getImages(message, text) {
   request({
     uri: "https://www.googleapis.com/customsearch/v1?q="+text+"&searchType=image&key="+google_token+"&cx=009751422889135684132:7melntwcipq",
     method: "GET"
   }, function(error, response, body) {
     //This returns the first image result
-    return json.items[0].link;
+    // return json.items[0].link;
+    rtm.sendMessage(json.items[0].link, message.channel);
   });
 }
 
@@ -64,8 +65,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
   
       //If user wants to create an image, call google images api
       if (context["created_image"] == 1){
-        var image = createImage(watson_response);
-        rtm.sendMessage(image, message.channel);
+        createImage(message, watson_response);
       }
 
       //If user accepted an image, then
