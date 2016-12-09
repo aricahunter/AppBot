@@ -12,9 +12,11 @@ var rtm = new RtmClient(bot_token);
 console.log("Starting chatbot...");
 rtm.start();
 var context;
+var oldContext;
 
 WatsonWrapper.initConversation( function(error, responseContext) {
   context = responseContext;
+  oldContext = responseContext;
 });
 
 function getImages(text) {
@@ -37,7 +39,7 @@ function postXmsData(data) {
     },
     body: JSON.stringify(data)
   }, function(error, response, body) {
-    console.log(error)
+    console.log("XMS Error: "+error);
   });
 }
 
@@ -54,6 +56,13 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
       //   console.log(JSON.stringify(entities, null, 2));
       // }
       context = watson_response.context;
+      for(var k in context) {
+        if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
+          postXmsData({k: context[k]});
+        }
+      }
+      oldContext = context;
+
       if(watson_response.response == ""){
         response = "I'm sorry, I don't know how to respond to that.";
       }
