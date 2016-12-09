@@ -19,14 +19,12 @@ WatsonWrapper.initConversation( function(error, responseContext) {
 
 function createImage(message, watson_response){
   var object_to_search;
-  var image;
-
   for(var k in watson_response["entities"]){
-    if(k['entity'] == "foods") {
-      object_to_search = k[entity]['value'];
+    if(watson_response["entities"][k]['entity'] == "foods") {
+      object_to_search = watson_response["entities"][k]["value"];
+      getImages(message, object_to_search);
     }
   }
-  getImages(message, object_to_search);
 } 
 
 function getImages(message, text) {
@@ -36,6 +34,8 @@ function getImages(message, text) {
   }, function(error, response, body) {
     //This returns the first image result
     // return json.items[0].link;
+    json = JSON.parse(body);
+    // console.log(JSON.stringify(response, null, 2));
     rtm.sendMessage(json.items[0].link, message.channel);
   });
 }
@@ -64,7 +64,8 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
       context = watson_response.context;
   
       //If user wants to create an image, call google images api
-      if (context["created_image"] == 1){
+      // console.log(JSON.stringify(watson_response, null, 2));
+      if (watson_response["entities"].length > 0){
         createImage(message, watson_response);
       }
 
