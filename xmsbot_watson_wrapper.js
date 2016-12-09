@@ -38,11 +38,12 @@ sendMessage = function(userMessage, context, done) {
                 done(err);
             }
             else{
-                // console.log(response["output"]["text"]);
+                // console.log(JSON.stringify(response, null, 2));
                 var responseArray = response["output"]["text"];
                 done(null, {
                     context: response["context"],
-                    response: response["output"]["text"][responseArray.length - 1]
+                    response: response["output"]["text"][responseArray.length - 1],
+                    entities: response["entities"]
                 });
             }
     });

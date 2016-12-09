@@ -42,16 +42,19 @@ function postXmsData(data) {
 }
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  WatsonWrapper.sendMessage(message.text, context, function(err, response) {
+  WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
     if (err) {
       rtm.sendMessage("Error asking watson", message.channel);
     }
     else{
-      // console.log(response.response);
-      context = response.context;
-      entities = response.entities;
-      console.log(response);
-      rtm.sendMessage(response.response, message.channel);
+      // How to call the entities
+      // entities = watson_response.entities;
+      // if(entities.length > 0){
+      //   console.log("There are entities detected!");
+      //   console.log(JSON.stringify(entities, null, 2));
+      // }
+      context = watson_response.context;
+      rtm.sendMessage(watson_response.response, message.channel);
     }
   });
   //message.text is what the message is and what we'll want to feed to watson to figure out response
