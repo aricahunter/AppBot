@@ -35,7 +35,6 @@ function getImages(message, text) {
     //This returns the first image result
     // return json.items[0].link;
     json = JSON.parse(body);
-    // console.log(JSON.stringify(response, null, 2));
     rtm.sendMessage(json.items[0].link, message.channel);
   });
 }
@@ -62,22 +61,15 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
       }
       else{
         //If user wants to create an image, call google images api
-        // console.log(JSON.stringify(watson_response, null, 2));
-        if (watson_response["entities"].length > 0){
+        if (context["create_image"] == 1){
           createImage(message, watson_response);
         }
 
         //If user accepted an image, then
         else{
-          // How to call the entities
-          // entities = watson_response.entities;
-          // if(entities.length > 0){
-          //   console.log("There are entities detected!");
-          //   console.log(JSON.stringify(entities, null, 2));
-          // }
           context = watson_response.context;
           for(var k in context) {
-            if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
+            if (k != "conversation_id" && k != "system" && k != "created_image" && context[k] != oldContext[k]){
               postXmsData({k: context[k]});
             }
           }
@@ -91,7 +83,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           else {
             response = watson_response.response;
           }
-          rtm.sendMessage("http://2dopeboyz.com/wp-content/uploads/2015/11/meow-the-jewels-random.jpg", message.channel);
+          rtm.sendMessage(response, message.channel);
         }
       }
     }
