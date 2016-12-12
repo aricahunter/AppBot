@@ -29,8 +29,10 @@ function getImages(message, text, watson_response) {
     rtm.sendMessage(json.items[numImage].link, message.channel);
 
     for(var string in watson_response.response) {
-      rtm.sendMessage(watson_response.response, message.channel);
+      rtm.sendMessage(watson_response.response[string], message.channel);
     }
+
+    return json.items[numImage].link
   });
 }
 
@@ -68,8 +70,12 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user wants to create an image, call google images api
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
-          getImages(message, image_to_search, watson_response);
+          var image = getImages(message, image_to_search, watson_response);
           numImage++;
+          if(watson_response["intents"][0]["intent"] == "Yes") {
+            //Do something to send image to XMS
+            numImage = 0;
+          }
         }
 
         //If user accepted an image, then
@@ -88,7 +94,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           oldContext = context;
 
           //Check if Watson doesn't reply.
-          if(watson_response.response == ""){
+          if(watson_response.response == []){
             response = "I'm sorry, I don't know how to respond to that.";
           }
 
