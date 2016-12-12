@@ -27,8 +27,10 @@ function getImages(message, text, watson_response) {
     // return json.items[0].link;
     json = JSON.parse(body);
     rtm.sendMessage(json.items[numImage].link, message.channel);
-    rtm.sendMessage(watson_response.response, message.channel);
 
+    for(var string in watson_response.response) {
+      rtm.sendMessage(watson_response.response, message.channel);
+    }
   });
 }
 
@@ -53,6 +55,7 @@ function postOrderBotData(key, value) {
 }
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
+  //FOR DEBUG PURPOSES ONLY
   console.log(message);
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
@@ -88,10 +91,13 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           if(watson_response.response == ""){
             response = "I'm sorry, I don't know how to respond to that.";
           }
+
           else {
             response = watson_response.response;
           }
-          rtm.sendMessage(response, message.channel);
+          for(var index in response) {
+            rtm.sendMessage(response[index], message.channel);
+          }
         }
       }
     }
