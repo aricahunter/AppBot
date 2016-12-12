@@ -36,13 +36,9 @@ function postXmsData(key, value) {
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
-    json: true,
-    headers: {
-        "content-type": "application/json",
-    },
-    body: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
+    json: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("XMS Error: "+error);
+    console.log("Order Error: "+error);
   });
 }
 
@@ -78,8 +74,8 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           for(var k in context) {
             if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
               try{
-                //postXmsData(k, context[k]);
-                //postOrderBotData(k, context[k]);
+                postXmsData(k, context[k]);
+                postOrderBotData(k, context[k]);
               }
               catch(err) {
                 console.log("Error POSTing context var updates: " + err.message);
