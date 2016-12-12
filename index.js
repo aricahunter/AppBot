@@ -40,7 +40,7 @@ function postXmsData(key, value) {
     headers: {
         "content-type": "application/json",
     },
-    body: JSON.stringify({"element":key.split("@")[1], "type":key.split("@")[0], "value":value})
+    body: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
     console.log("XMS Error: "+error);
   });
@@ -54,7 +54,7 @@ function postOrderBotData(key, value) {
     headers: {
         "content-type": "application/json",
     },
-    body: JSON.stringify({"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "key":key, "element":key.split("@")[1], "type":key.split("@")[0], "value":value})
+    body: {"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
     console.log("XMS Error: "+error);
   });
