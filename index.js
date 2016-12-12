@@ -17,17 +17,8 @@ WatsonWrapper.initConversation( function(error, responseContext) {
   oldContext = responseContext;
 });
 
-function createImage(message, watson_response){
-  var object_to_search;
-  for(var k in watson_response["entities"]){
-    if(watson_response["entities"][k]['entity'] == "foods") {
-      object_to_search = watson_response["entities"][k]["value"];
-      getImages(message, object_to_search);
-    }
-  }
-}
-
-function getImages(message, text) {
+function getImages(message, text, watson_response) {
+  console.log('here in images');
   request({
     uri: "https://www.googleapis.com/customsearch/v1?q="+text+"&searchType=image&key="+google_token+"&cx=009751422889135684132:7melntwcipq",
     method: "GET"
@@ -36,6 +27,7 @@ function getImages(message, text) {
     // return json.items[0].link;
     json = JSON.parse(body);
     rtm.sendMessage(json.items[0].link, message.channel);
+    rtm.sendMessage(watson_response.response, message.channel);
   });
 }
 
@@ -69,14 +61,17 @@ function postOrderBotData(key, value) {
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
-    if (message.username != "slackbot" && message.name != "U0X7N65B5") {
+    if (message.username != "slackbot" && message["subtype"] != "message_changed") {
       if (err) {
         rtm.sendMessage("Error asking watson", message.channel);
       }
+
       else{
         //If user wants to create an image, call google images api
-        if (context["create_image"] == 1){
-          createImage(message, watson_response);
+        console.log(watson_response["context"]["create_image"]);
+        if (watson_response["context"]["create_image"] == 1){
+          var image_to_search = watson_response["context"]["delivery_item"];
+          getImages(message, image_to_search, watson_response);
         }
 
         //If user accepted an image, then
