@@ -50,19 +50,16 @@ function postOrderBotData(key, value) {
   request({
     url: "https://orderbot-server.herokuapp.com/xms",
     method: "POST",
-    json: true,
-    headers: {
-        "content-type": "application/json",
-    },
-    body: {"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "element":key.split("@")[1], "type":key.split("@")[0], "value":value}
+    json: {"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
     console.log("XMS Error: "+error);
   });
 }
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
+  console.log(message);
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
-    if (message.username != "slackbot" && message["subtype"] != "message_changed") {
+    if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
         rtm.sendMessage("Error asking watson", message.channel);
       }
@@ -81,8 +78,8 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           for(var k in context) {
             if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
               try{
-                postXmsData(k, context[k]);
-                postOrderBotData(k, context[k]);
+                //postXmsData(k, context[k]);
+                //postOrderBotData(k, context[k]);
               }
               catch(err) {
                 console.log("Error POSTing context var updates: " + err.message);
