@@ -11,6 +11,7 @@ console.log("Starting chatbot...");
 rtm.start();
 var context;
 var oldContext;
+var numImage = 0;
 
 WatsonWrapper.initConversation( function(error, responseContext) {
   context = responseContext;
@@ -18,7 +19,6 @@ WatsonWrapper.initConversation( function(error, responseContext) {
 });
 
 function getImages(message, text, watson_response) {
-  console.log('here in images');
   request({
     uri: "https://www.googleapis.com/customsearch/v1?q="+text+"&searchType=image&key="+google_token+"&cx=009751422889135684132:7melntwcipq",
     method: "GET"
@@ -26,8 +26,9 @@ function getImages(message, text, watson_response) {
     //This returns the first image result
     // return json.items[0].link;
     json = JSON.parse(body);
-    rtm.sendMessage(json.items[0].link, message.channel);
+    rtm.sendMessage(json.items[numImage].link, message.channel);
     rtm.sendMessage(watson_response.response, message.channel);
+
   });
 }
 
@@ -67,16 +68,16 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
       }
 
       else{
+        context = watson_response.context;
         //If user wants to create an image, call google images api
-        console.log(watson_response["context"]["create_image"]);
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
           getImages(message, image_to_search, watson_response);
+          numImage++;
         }
 
         //If user accepted an image, then
         else{
-          context = watson_response.context;
           for(var k in context) {
             if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
               try{
