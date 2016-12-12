@@ -31,7 +31,7 @@ function getImages(message, text, watson_response) {
   });
 }
 
-function postXmsData(data) {
+function postXmsData(key, value) {
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
@@ -39,7 +39,7 @@ function postXmsData(data) {
     headers: {
         "content-type": "application/json",
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify({"element":key.split("@")[1], "type":key.split("@")[0], "value":value})
   }, function(error, response, body) {
     console.log("XMS Error: "+error);
   });
@@ -53,7 +53,7 @@ function postOrderBotData(key, value) {
     headers: {
         "content-type": "application/json",
     },
-    body: JSON.stringify({"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "key":key, "value":value})
+    body: JSON.stringify({"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "key":key, "element":key.split("@")[1], "type":key.split("@")[0], "value":value})
   }, function(error, response, body) {
     console.log("XMS Error: "+error);
   });
@@ -78,9 +78,14 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         else{
           context = watson_response.context;
           for(var k in context) {
-            if (k != "conversation_id" && k != "system" && k != "created_image" && context[k] != oldContext[k]){
-              postXmsData({k: context[k]});
-              postOrderBotData(k, context[k]);
+            if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
+              try{
+                postXmsData(k, context[k]);
+                postOrderBotData(k, context[k]);
+              }
+              catch(err) {
+                console.log("Error POSTing context var updates: " + err.message);
+              }
             }
           }
           oldContext = context;
@@ -89,7 +94,6 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           if(watson_response.response == ""){
             response = "I'm sorry, I don't know how to respond to that.";
           }
-
           else {
             response = watson_response.response;
           }
