@@ -2,6 +2,7 @@ var request = require("request");
 var RtmClient = require('@slack/client').RtmClient;
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 var WatsonWrapper = require('./xmsbot_watson_wrapper.js')
+var Router = require('./routes.js')
 
 var bot_token = process.env.SLACK_KEY;
 var google_token = process.env.GOOGLE_SEARCH_KEY;
