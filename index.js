@@ -37,12 +37,13 @@ function getImages(message, text, watson_response) {
 }
 
 function postXmsData(key, value) {
+  console.log(value, key);
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
     json: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("Order Error: "+error);
+    console.log("XMS Error: "+error);
   });
 }
 
@@ -52,7 +53,7 @@ function postOrderBotData(key, value) {
     method: "POST",
     json: {"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("XMS Error: "+error);
+    console.log("Order Error: "+error);
   });
 }
 

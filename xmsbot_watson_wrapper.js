@@ -40,7 +40,7 @@ sendMessage = function(userMessage, context, done) {
             else{
                 var responseArray = response["output"]["text"];
                 if(response["output"]["text"].length == 0) {
-                  responseStrings = "";
+                  responseStrings = [];
                 }
                 else {
                   responseString = response["output"]["text"];
@@ -59,15 +59,3 @@ module.exports = {
     initConversation: initConversation,
     sendMessage: sendMessage
 };
-
-// app.on('start', function())
-
-
-
-
-// when required
-
-// WatsonApi = require('./xms_bot_wrapper')
-
-// watsonApi = new WatsonApi({conversation: true});
-
