@@ -6,7 +6,6 @@ var app = express();
 app.use(bodyParser.json());
 
 app.post('/posts', function(request, response){
-  console.log(request.body);
   try{
     response.status(200);
     var fulfilledOrders = request.body.fulfilledOrders;

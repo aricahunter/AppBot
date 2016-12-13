@@ -59,8 +59,6 @@ function postOrderBotData(key, value) {
 }
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  //FOR DEBUG PURPOSES ONLY
-  console.log(message);
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
