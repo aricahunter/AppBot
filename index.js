@@ -37,7 +37,6 @@ function getImages(message, text, watson_response) {
 }
 
 function postXmsData(key, value) {
-  console.log(value, key);
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
