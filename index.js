@@ -12,6 +12,8 @@ rtm.start();
 var context;
 var oldContext;
 var numImage = 0;
+var synonyms = {};
+var oldSynonym = "";
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
@@ -55,13 +57,9 @@ function deleteXmsData() {
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "DELETE"
   }, function(error, response, body) {
-<<<<<<< HEAD
-    console.log("XMS DELETE Error: " + error);
-=======
     if(error){
       console.log("XMS DELETE Error: " + error);
     }
->>>>>>> master
   });
 }
 
