@@ -61,6 +61,17 @@ function deleteXmsData() {
   });
 }
 
+function publishXMSData() {
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/publish",
+    method: "POST"
+  }, function(error, response, body){
+    if(error){
+      console.log("Error publishing XMS changes: " + error);
+    }
+  });
+}
+
 function postOrderBotData(key, value) {
   request({
     url: "https://orderbot-server.herokuapp.com/xms",
@@ -93,6 +104,13 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
             deleteXmsData();
             numImage = 0;
             init();
+          }
+        }
+
+        //If user wants to publish
+        for(var k in watson_response["intents"]) {
+          if(watson_response["intents"][k]["intent"] == "Publish"){
+            publishXMSData();
           }
         }
 
