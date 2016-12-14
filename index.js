@@ -62,7 +62,6 @@ function deleteXmsData() {
 }
 
 function publishXMSData() {
-  console.log('here in publish!');
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/publish",
     method: "POST"
@@ -110,7 +109,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
         //If user wants to publish
         for(var k in watson_response["intents"]) {
-          if(watson_response]["intents"][k]["intent"] == "Publish"){
+          if(watson_response["intents"][k]["intent"] == "Publish"){
             publishXMSData();
           }
         }
