@@ -12,13 +12,13 @@ rtm.start();
 var context;
 var oldContext;
 var numImage = 0;
-var synonyms = {};
 var oldSynonym = "";
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
     context = responseContext;
     oldContext = responseContext;
+    oldSynonym = responseContext["synonym_to_add"];
   });
 }
 
@@ -48,6 +48,19 @@ function postXmsData(key, value) {
   }, function(error, response, body) {
     if(error){
       console.log("XMS POST Error: "+error);
+    }
+  });
+}
+
+function postSynonyms(synonym){
+  console.log('posting synonym!');
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/synonyms",
+    method: "POST",
+    value: synonym
+  }, function(error, response, body){
+    if(error) {
+      console.log("Synonym POST error: " + error);
     }
   });
 }
@@ -109,10 +122,16 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           }
         }
 
+        //If the user wants to add a synonym
+        if(context["synonym_to_add"] != oldSynonym) {
+          postSynonyms(context["synonym_to_add"]);
+          oldSynonym = context["synonym_to_add"];
+        }
+
         //If user accepted an image, then
         else{
           for(var k in context) {
-            if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
+            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && context[k] != oldContext[k]){
               try{
                 postXmsData(k, context[k]);
                 postOrderBotData(k, context[k]);
