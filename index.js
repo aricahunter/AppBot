@@ -44,7 +44,9 @@ function postXmsData(key, value) {
     method: "POST",
     json: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("XMS POST Error: "+error);
+    if(error){
+      console.log("XMS POST Error: "+error);
+    }
   });
 }
 
@@ -53,7 +55,13 @@ function deleteXmsData() {
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "DELETE"
   }, function(error, response, body) {
+<<<<<<< HEAD
     console.log("XMS DELETE Error: " + error);
+=======
+    if(error){
+      console.log("XMS DELETE Error: " + error);
+    }
+>>>>>>> master
   });
 }
 
@@ -63,7 +71,9 @@ function postOrderBotData(key, value) {
     method: "POST",
     json: {"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("Order Error: "+error);
+    if(error){
+      console.log("Order Error: "+error);
+    }
   });
 }
 
