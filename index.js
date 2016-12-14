@@ -13,10 +13,12 @@ var context;
 var oldContext;
 var numImage = 0;
 
-WatsonWrapper.initConversation( function(error, responseContext) {
-  context = responseContext;
-  oldContext = responseContext;
-});
+function init(){
+  WatsonWrapper.initConversation( function(error, responseContext) {
+    context = responseContext;
+    oldContext = responseContext;
+  });
+}
 
 function getImages(message, text, watson_response) {
   request({
@@ -65,6 +67,8 @@ function postOrderBotData(key, value) {
   });
 }
 
+init();
+
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
   //FOR DEBUG PURPOSES ONLY
   console.log(message);
@@ -82,6 +86,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           if(watson_response["intents"][k]["intent"] == "Greetings") {
             deleteXmsData();
             numImage = 0;
+            init();
           }
         }
 
