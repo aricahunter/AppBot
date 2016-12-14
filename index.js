@@ -52,6 +52,18 @@ function postXmsData(key, value) {
   });
 }
 
+function postXMSImage(image_url) {
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/image",
+    method: "POST",
+    url: image_url
+  }, function(error, response, body) {
+    if(error) {
+      console.log("Error posting image to XMS: " + error);
+    }
+  });
+}
+
 function postSynonyms(synonym){
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/synonyms",
@@ -131,10 +143,10 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user wants to create an image, call google images api
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
-          var image = getImages(message, image_to_search, watson_response);
+          var image_url = getImages(message, image_to_search, watson_response);
           numImage++;
           if(watson_response["intents"][0]["intent"] == "Yes") {
-            //Do something to send image to XMS
+            postXMSImage(image_url);
             numImage = 0;
           }
         }
