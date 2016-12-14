@@ -37,15 +37,11 @@ function getImages(message, text, watson_response) {
 }
 
 function postXmsData(key, value) {
-  console.log(value, key);
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
     json: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-<<<<<<< Updated upstream
-    console.log("XMS Error: "+error);
-=======
     if(error){
       console.log("XMS POST Error: "+error);
     }
@@ -60,7 +56,6 @@ function deleteXmsData() {
     if(error){
       console.log("XMS DELETE Error: " + error);
     }
->>>>>>> Stashed changes
   });
 }
 
