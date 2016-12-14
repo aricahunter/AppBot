@@ -108,6 +108,13 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           }
         }
 
+        //If user wants to publish
+        for(var k in watson_response["intents"]) {
+          if(watson_response]["intents"][k]["intent"] == "Publish"){
+            publishXMSData();
+          }
+        }
+
         //If user wants to create an image, call google images api
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
