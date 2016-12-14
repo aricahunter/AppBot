@@ -37,13 +37,21 @@ function getImages(message, text, watson_response) {
 }
 
 function postXmsData(key, value) {
-  console.log(value, key);
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
     json: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("XMS Error: "+error);
+    console.log("XMS POST Error: "+error);
+  });
+}
+
+function deleteXmsData() {
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
+    method: "DELETE"
+  }, function(error, response, body) {
+    console.log("XMS DELETE Error: " + error);
   });
 }
 
@@ -68,6 +76,15 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
       else{
         context = watson_response.context;
+        //If user greets the bot, assume that the user is starting to create a new bot, and 
+        //everything should be reset
+        for(var k in watson_response["intents"]) {
+          if(watson_response["intents"][k]["intent"] == "Greetings") {
+            deleteXmsData();
+            numImage = 0;
+          }
+        }
+
         //If user wants to create an image, call google images api
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
