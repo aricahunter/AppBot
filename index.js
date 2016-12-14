@@ -53,7 +53,6 @@ function postXmsData(key, value) {
 }
 
 function postSynonyms(synonym){
-  console.log('posting synonym!');
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/synonyms",
     method: "POST",
