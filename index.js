@@ -2,6 +2,7 @@ var request = require("request");
 var RtmClient = require('@slack/client').RtmClient;
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 var WatsonWrapper = require('./xmsbot_watson_wrapper.js')
+var Router = require('./routes.js')
 
 var bot_token = process.env.SLACK_KEY;
 var google_token = process.env.GOOGLE_SEARCH_KEY;
@@ -13,6 +14,12 @@ var context;
 var oldContext;
 var numImage = 0;
 var oldSynonym = "";
+
+exports.processOrders = function(fulfilled, canceled) {
+  console.log(fulfilled, canceled);
+};
+
+
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
@@ -101,8 +108,6 @@ function postOrderBotData(key, value) {
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  //FOR DEBUG PURPOSES ONLY
-  console.log(message);
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
@@ -111,7 +116,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
       else{
         context = watson_response.context;
-        //If user greets the bot, assume that the user is starting to create a new bot, and 
+        //If user greets the bot, assume that the user is starting to create a new bot, and
         //everything should be reset
         for(var k in watson_response["intents"]) {
           if(watson_response["intents"][k]["intent"] == "Greetings") {
