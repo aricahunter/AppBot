@@ -1,6 +1,6 @@
 var express = require('express')
   , bodyParser = require('body-parser');
-var index = require('./index.js');
+var WatsonWrapper = require('./xmsbot_watson_wrapper.js');
 var app = express();
 
 app.use(bodyParser.json());
@@ -10,7 +10,7 @@ app.post('/posts', function(request, response){
     response.status(200);
     var fulfilledOrders = request.body.fulfilledOrders;
     var canceledOrders = request.body.canceledOrders;
-    index.processOrders(fulfilledOrders, canceledOrders);
+    WatsonWrapper.updateAnalytics(fulfilledOrders, canceledOrders);
     response.send("");
   } catch (err){
     console.log(err.message);
