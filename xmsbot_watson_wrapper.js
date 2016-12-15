@@ -33,8 +33,8 @@ initConversation = function(done) {
 }
 
 sendMessage = function(userMessage, context, done) {
-    context["orders_fulfilled"] = ordersFulfilled;
-    context["orders_cancelled"] = ordersCanceled;
+    context["fulfilled_orders"] = ordersFulfilled;
+    context["canceled_orders"] = ordersCanceled;
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': userMessage},
@@ -51,8 +51,8 @@ sendMessage = function(userMessage, context, done) {
                 }
                 else {
                   responseString = response["output"]["text"];
-                  console.log("Fulfilled: ", response["context"]["orders_fulfilled"]);
-                  console.log("Canceled: ", response["context"]["orders_cancelled"]);
+                  console.log("Fulfilled: ", response["context"]["fulfilled_orders"]);
+                  console.log("Canceled: ", response["context"]["canceled_orders"]);
                 }
                 done(null, {
                     context: response["context"],
