@@ -118,7 +118,7 @@ function postOrderBotData(key, value) {
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  console.log(message);
+  // console.log(message);
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
@@ -130,10 +130,9 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user greets the bot, assume that the user is starting to create a new bot, and
         //everything should be reset
         for(var k in watson_response["intents"]) {
-          if(watson_response["intents"][k]["intent"] == "Greetings") {
+          if(watson_response["intents"][k]["intent"] == "Create") {
             deleteXmsData();
             numImage = 0;
-            init();
           }
         }
 
