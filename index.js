@@ -145,12 +145,10 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           numImage++;
         }
 
-        if(watson_response["entities"].length > 0) {
-          if(watson_response["entities"][0]["entity"] == "yes") {
-            var key = ["splash-image", "url"];
-            postXMSImage(key, image_url);
-            numImage = 0;
-          }
+        if(watson_response["context"]["create_image"] == 2) {
+          var key = ["splash-image", "url"];
+          postXMSImage(key, image_url);
+          numImage = 0;
         }
 
         //If the user wants to add a synonym
