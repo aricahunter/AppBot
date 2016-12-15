@@ -14,6 +14,7 @@ var context;
 var oldContext;
 var numImage = 0;
 var oldSynonym = "";
+var image_url = "";
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
@@ -34,8 +35,7 @@ function getImages(message, text, watson_response) {
     for(var string in watson_response.response) {
       rtm.sendMessage(watson_response.response[string], message.channel);
     }
-
-    return json.items[numImage].link
+    image_url = json.items[numImage].link
   });
 }
 
@@ -127,6 +127,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           if(watson_response["intents"][k]["intent"] == "Create") {
             deleteXmsData();
             numImage = 0;
+            image_url = "";
           }
         }
 
@@ -140,7 +141,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user wants to create an image, call google images api
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
-          var image_url = getImages(message, image_to_search, watson_response);
+          getImages(message, image_to_search, watson_response);
           numImage++;
         }
 
