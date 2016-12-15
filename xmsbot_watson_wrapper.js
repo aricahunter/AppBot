@@ -9,7 +9,12 @@ var conversation = watson.conversation({
     version_date: '2016-09-20'
 });
 
+var ordersFulfilled = 0;
+var ordersCancelled = 0;
+
 initConversation = function(done) {
+    var ordersFulfilled = 0;
+    var ordersCancelled = 0;
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': ''},
@@ -28,13 +33,15 @@ initConversation = function(done) {
 }
 
 sendMessage = function(userMessage, context, done) {
+    context["orders_fulfilled"] = ordersFulfilled;
+    context["orders_cancelled"] = ordersCancelled;
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': userMessage},
         context: context
         },  function(err, response){
             if (err) {
-                console.log(err)
+                console.log(err);
                 done(err);
             }
             else{
@@ -55,7 +62,13 @@ sendMessage = function(userMessage, context, done) {
     });
 }
 
+updateAnalytics = function(fulfilled, cancelled) {
+    ordersFulfilled = fulfilled;
+    ordersCancelled = cancelled;
+}
+
 module.exports = {
     initConversation: initConversation,
-    sendMessage: sendMessage
+    sendMessage: sendMessage,
+    updateAnalytics: updateAnalytics
 };

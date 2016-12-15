@@ -15,12 +15,6 @@ var oldContext;
 var numImage = 0;
 var oldSynonym = "";
 
-exports.processOrders = function(fulfilled, canceled) {
-  console.log(fulfilled, canceled);
-};
-
-
-
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
     context = responseContext;
