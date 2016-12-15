@@ -13,8 +13,8 @@ var ordersFulfilled = 0;
 var ordersCanceled = 0;
 
 initConversation = function(done) {
-    var ordersFulfilled = 0;
-    var ordersCanceled = 0;
+    ordersFulfilled = 0;
+    ordersCanceled = 0;
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': ''},
@@ -34,7 +34,7 @@ initConversation = function(done) {
 
 sendMessage = function(userMessage, context, done) {
     context["orders_fulfilled"] = ordersFulfilled;
-    context["orders_canceled"] = ordersCanceled;
+    context["orders_cancelled"] = ordersCanceled;
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': userMessage},
@@ -51,6 +51,8 @@ sendMessage = function(userMessage, context, done) {
                 }
                 else {
                   responseString = response["output"]["text"];
+                  console.log("Fulfilled: ", response["context"]["orders_fulfilled"]);
+                  console.log("Canceled: ", response["context"]["orders_cancelled"]);
                 }
                 done(null, {
                     context: response["context"],
