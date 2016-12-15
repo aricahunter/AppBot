@@ -19,4 +19,4 @@ app.post('/posts', function(request, response){
   }
 });
 
-app.listen(3001);
+app.listen(process.env.PORT || 3000);
