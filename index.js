@@ -15,6 +15,12 @@ var oldContext;
 var numImage = 0;
 var oldSynonym = "";
 
+exports.processOrders = function(fulfilled, canceled) {
+  console.log(fulfilled, canceled);
+};
+
+
+
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
     context = responseContext;
@@ -110,7 +116,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
       else{
         context = watson_response.context;
-        //If user greets the bot, assume that the user is starting to create a new bot, and 
+        //If user greets the bot, assume that the user is starting to create a new bot, and
         //everything should be reset
         for(var k in watson_response["intents"]) {
           if(watson_response["intents"][k]["intent"] == "Greetings") {
