@@ -10,11 +10,11 @@ var conversation = watson.conversation({
 });
 
 var ordersFulfilled = 0;
-var ordersCancelled = 0;
+var ordersCanceled = 0;
 
 initConversation = function(done) {
     var ordersFulfilled = 0;
-    var ordersCancelled = 0;
+    var ordersCanceled = 0;
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': ''},
@@ -34,7 +34,7 @@ initConversation = function(done) {
 
 sendMessage = function(userMessage, context, done) {
     context["orders_fulfilled"] = ordersFulfilled;
-    context["orders_cancelled"] = ordersCancelled;
+    context["orders_canceled"] = ordersCanceled;
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': userMessage},
@@ -62,9 +62,9 @@ sendMessage = function(userMessage, context, done) {
     });
 }
 
-updateAnalytics = function(fulfilled, cancelled) {
+updateAnalytics = function(fulfilled, canceled) {
     ordersFulfilled = fulfilled;
-    ordersCancelled = cancelled;
+    ordersCanceled = canceled;
 }
 
 module.exports = {

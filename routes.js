@@ -9,8 +9,8 @@ app.post('/posts', function(request, response){
   try{
     response.status(200);
     var fulfilledOrders = request.body.fulfilledOrders;
-    var cancelledOrders = request.body.cancelledOrders;
-    WatsonWrapper.updateAnalytics(fulfilledOrders, cancelledOrders);
+    var canceledOrders = request.body.canceledOrders;
+    WatsonWrapper.updateAnalytics(fulfilledOrders, canceledOrders);
     response.send("");
   } catch (err){
     console.log(err.message);
