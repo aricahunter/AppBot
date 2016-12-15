@@ -34,8 +34,6 @@ function getImages(message, text, watson_response) {
     uri: "https://www.googleapis.com/customsearch/v1?q="+text+"&searchType=image&key="+google_token+"&cx=009751422889135684132:7melntwcipq",
     method: "GET"
   }, function(error, response, body) {
-    //This returns the first image result
-    // return json.items[0].link;
     json = JSON.parse(body);
     rtm.sendMessage(json.items[numImage].link, message.channel);
 
@@ -55,6 +53,18 @@ function postXmsData(key, value) {
   }, function(error, response, body) {
     if(error){
       console.log("XMS POST Error: "+error);
+    }
+  });
+}
+
+function postXMSImage(key, image_url) {
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
+    method: "POST",
+    json: {"element": key[0], "type": key[1], "value": image_url}
+  }, function(error, response, body) {
+    if(error) {
+      console.log("Error posting image to XMS: " + error);
     }
   });
 }
@@ -136,12 +146,14 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user wants to create an image, call google images api
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
-          var image = getImages(message, image_to_search, watson_response);
+          var image_url = getImages(message, image_to_search, watson_response);
           numImage++;
-          if(watson_response["intents"][0]["intent"] == "Yes") {
-            //Do something to send image to XMS
-            numImage = 0;
-          }
+        }
+
+        if(watson_response["context"]["create_image"] == 2) {
+          var key = ["splash-image", "url"];
+          postXMSImage(key, image_url);
+          numImage = 0;
         }
 
         //If the user wants to add a synonym
