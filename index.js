@@ -13,11 +13,15 @@ rtm.start();
 var context;
 var oldContext;
 var numImage = 0;
+var oldSynonym = "";
 
-WatsonWrapper.initConversation( function(error, responseContext) {
-  context = responseContext;
-  oldContext = responseContext;
-});
+function init(){
+  WatsonWrapper.initConversation( function(error, responseContext) {
+    context = responseContext;
+    oldContext = responseContext;
+    oldSynonym = responseContext["synonym_to_add"];
+  });
+}
 
 function getImages(message, text, watson_response) {
   request({
@@ -38,13 +42,48 @@ function getImages(message, text, watson_response) {
 }
 
 function postXmsData(key, value) {
-  console.log(value, key);
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
     json: {"element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("XMS Error: "+error);
+    if(error){
+      console.log("XMS POST Error: "+error);
+    }
+  });
+}
+
+function postSynonyms(synonym){
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/synonyms",
+    method: "POST",
+    value: synonym
+  }, function(error, response, body){
+    if(error) {
+      console.log("Synonym POST error: " + error);
+    }
+  });
+}
+
+function deleteXmsData() {
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
+    method: "DELETE"
+  }, function(error, response, body) {
+    if(error){
+      console.log("XMS DELETE Error: " + error);
+    }
+  });
+}
+
+function publishXMSData() {
+  request({
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/publish",
+    method: "POST"
+  }, function(error, response, body){
+    if(error){
+      console.log("Error publishing XMS changes: " + error);
+    }
   });
 }
 
@@ -54,9 +93,13 @@ function postOrderBotData(key, value) {
     method: "POST",
     json: {"auth_token":"1f7d390b-b5bb-4c6d-8b71-15a7f7dc188f", "element":key.split("@")[1], "type":key.split("@")[0], "value":value}
   }, function(error, response, body) {
-    console.log("Order Error: "+error);
+    if(error){
+      console.log("Order Error: "+error);
+    }
   });
 }
+
+init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
@@ -67,6 +110,23 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
       else{
         context = watson_response.context;
+        //If user greets the bot, assume that the user is starting to create a new bot, and 
+        //everything should be reset
+        for(var k in watson_response["intents"]) {
+          if(watson_response["intents"][k]["intent"] == "Greetings") {
+            deleteXmsData();
+            numImage = 0;
+            init();
+          }
+        }
+
+        //If user wants to publish
+        for(var k in watson_response["intents"]) {
+          if(watson_response["intents"][k]["intent"] == "Publish"){
+            publishXMSData();
+          }
+        }
+
         //If user wants to create an image, call google images api
         if (watson_response["context"]["create_image"] == 1){
           var image_to_search = watson_response["context"]["delivery_item"];
@@ -78,10 +138,20 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           }
         }
 
+        //If the user wants to add a synonym
+        if(context["synonym_to_add"] != oldSynonym) {
+          postSynonyms(context["synonym_to_add"]);
+          oldSynonym = context["synonym_to_add"];
+          response = watson_response.response;
+          for(var index in response) {
+            rtm.sendMessage(response[index], message.channel);
+          }
+        }
+
         //If user accepted an image, then
         else{
           for(var k in context) {
-            if (k != "conversation_id" && k != "system" && context[k] != oldContext[k]){
+            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && context[k] != oldContext[k]){
               try{
                 postXmsData(k, context[k]);
                 postOrderBotData(k, context[k]);
