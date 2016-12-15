@@ -51,7 +51,6 @@ function postXmsData(key, value) {
 }
 
 function postXMSImage(key, image_url) {
-  console.log('here in image method');
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
