@@ -27,8 +27,6 @@ function getImages(message, text, watson_response) {
     uri: "https://www.googleapis.com/customsearch/v1?q="+text+"&searchType=image&key="+google_token+"&cx=009751422889135684132:7melntwcipq",
     method: "GET"
   }, function(error, response, body) {
-    //This returns the first image result
-    // return json.items[0].link;
     json = JSON.parse(body);
     rtm.sendMessage(json.items[numImage].link, message.channel);
 
@@ -52,11 +50,12 @@ function postXmsData(key, value) {
   });
 }
 
-function postXMSImage(image_url) {
+function postXMSImage(key, image_url) {
+  console.log('here in image method');
   request({
-    url: "http://chatbot-xms-demo-middleware.herokuapp.com/image",
+    url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
-    url: image_url
+    json: {"element": key[0], "type": key[1], "value": image_url}
   }, function(error, response, body) {
     if(error) {
       console.log("Error posting image to XMS: " + error);
@@ -114,7 +113,7 @@ init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
   //FOR DEBUG PURPOSES ONLY
-  console.log(message);
+  // console.log(message);
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
@@ -145,8 +144,12 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           var image_to_search = watson_response["context"]["delivery_item"];
           var image_url = getImages(message, image_to_search, watson_response);
           numImage++;
-          if(watson_response["intents"][0]["intent"] == "Yes") {
-            postXMSImage(image_url);
+        }
+
+        if(watson_response["entities"].length > 0) {
+          if(watson_response["entities"][0]["entity"] == "yes") {
+            var key = ["splash-image", "url"];
+            postXMSImage(key, image_url);
             numImage = 0;
           }
         }
