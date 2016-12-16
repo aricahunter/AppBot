@@ -185,7 +185,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user accepted an image, then
         else{
           for(var k in context) {
-            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && context[k] != oldContext[k]){
+            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && k != "create_image" && context[k] != oldContext[k]){
               try{
                 postXmsData(k, context[k]);
                 postOrderBotData(k, context[k]);
