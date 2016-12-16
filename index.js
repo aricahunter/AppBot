@@ -15,6 +15,7 @@ var oldContext;
 var numImage = 0;
 var oldSynonym = "";
 var image_url = "";
+var paramNum = 0;
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
@@ -145,10 +146,30 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           numImage++;
         }
 
+        //If the user accepted an image
         if(watson_response["context"]["create_image"] == 2) {
           var key = ["splash-image", "url"];
           postXMSImage(key, image_url);
           numImage = 0;
+        }
+
+        // //If the user wants to see analytics graphs
+        for(var k in watson_response["intents"]) {
+          if(watson_response["intents"][k]["intent"] == "Analytics") {
+            for(var j in watson_response["entities"]) {
+              if(watson_response["entities"][j]["value"] == "delivered") {
+                var url = "http://chatbot-xms-demo-middleware.herokuapp.com/order-fulfilled-analytics-chart" + "?param=" + paramNum;
+                rtm.sendMessage(url, message.channel);
+                paramNum++;
+              }
+
+              if(watson_response["entities"][j]["value"] == "canceled") {
+                var url = "http://chatbot-xms-demo-middleware.herokuapp.com/order-canceled-analytics-chart" + "?param=" + paramNum;
+                rtm.sendMessage(url, message.channel);
+                paramNum++;
+              }
+            }
+          }
         }
 
         //If the user wants to add a synonym
