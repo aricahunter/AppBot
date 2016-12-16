@@ -68,7 +68,7 @@ function postSynonyms(synonym){
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/synonyms",
     method: "POST",
-    json: synonym
+    body: {"value": synonym}
   }, function(error, response, body){
     if(error) {
       console.log("Synonym POST error: " + error);
