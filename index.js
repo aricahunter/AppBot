@@ -173,8 +173,8 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         }
 
         //If the user wants to add a synonym
-        if(context["synonym_to_add"] != oldSynonym) {
-          // postSynonyms(context["synonym_to_add"]);
+        if(context["synonym_to_add"] != oldSynonym && context["synonym_to_add"] != "") {
+          postSynonyms(context["synonym_to_add"]);
           oldSynonym = context["synonym_to_add"];
           response = watson_response.response;
           for(var index in response) {
