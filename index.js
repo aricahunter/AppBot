@@ -32,10 +32,6 @@ function getImages(message, text, watson_response) {
   }, function(error, response, body) {
     json = JSON.parse(body);
     rtm.sendMessage(json.items[numImage].link, message.channel);
-
-    for(var string in watson_response.response) {
-      rtm.sendMessage(watson_response.response[string], message.channel);
-    }
     image_url = json.items[numImage].link
   });
 }
@@ -113,7 +109,6 @@ function postOrderBotData(key, value) {
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  console.log(message);
   WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {

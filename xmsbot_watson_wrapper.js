@@ -21,7 +21,7 @@ initConversation = function(done) {
         context: {}
         },  function(err, response){
             if (err){
-                console.log('error');
+                console.log('error: ' + err);
                 done();
             }
 
