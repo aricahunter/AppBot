@@ -16,6 +16,7 @@ var numImage = 0;
 var oldSynonym = "";
 var image_url = "";
 var paramNum = 0;
+var resetLiterals = 0;
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
@@ -72,6 +73,18 @@ function postSynonyms(synonym){
   });
 }
 
+function postLiteralKey(key, value) {
+  request({
+    url: "https://chatbot-xms-demo-middleware.herokuapp.com/xms",
+    method: "POST",
+    json: {"element": key, "type": "key", "value": value}
+  }, function(error, response, body){
+    if(error){
+      console.log("Literal Key POST error: " + error);
+    }
+  });
+}
+
 function deleteXmsData() {
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
@@ -109,7 +122,7 @@ function postOrderBotData(key, value) {
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  WatsonWrapper.sendMessage(message.text, context, function(err, watson_response) {
+  WatsonWrapper.sendMessage(message.text, resetLiterals, context, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
         rtm.sendMessage("Error asking watson", message.channel);
@@ -148,6 +161,17 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
           numImage = 0;
         }
 
+        //If the user wanted to change using a literal key
+        if(watson_response["context"]["literal_key"] != "" && watson_response["context"]["literal_value"] != "") {
+          var literals_context = watson_response["context"];
+          postLiteralKey(literals_context["literal_key"], literals_context["literal_value"]);
+          resetLiterals = 1;
+        }
+
+        if(watson_response["context"]["literal_key"] == "" || watson_response["context"]["literal_value"] == "") {
+          resetLiterals = 0;
+        }
+
         // //If the user wants to see analytics graphs
         for(var k in watson_response["intents"]) {
           if(watson_response["intents"][k]["intent"] == "Analytics") {
@@ -180,7 +204,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user accepted an image, then
         else{
           for(var k in context) {
-            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && k != "create_image" && context[k] != oldContext[k]){
+            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && k != "create_image" && k != "literal_key" && k != "literal_value" && context[k] != oldContext[k]){
               try{
                 postXmsData(k, context[k]);
                 postOrderBotData(k, context[k]);

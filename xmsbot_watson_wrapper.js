@@ -32,12 +32,19 @@ initConversation = function(done) {
     });
 }
 
-sendMessage = function(userMessage, context, done) {
+sendMessage = function(userMessage, resetLiterals, context, done) {
     context["fulfilled_orders"] = ordersFulfilled;
     context["canceled_orders"] = ordersCanceled;
+    if(resetLiterals == 1){
+        context["literal_key"] = "";
+        context["literal_value"] = "";
+    }
+    var sanitizedUserMessage = userMessage.replace(/[\u201C\u201D]/g, '"');
+
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
-        input: {'text': userMessage},
+        input: {'text': sanitizedUserMessage},
+        // input:{'text': userMessage},
         context: context
         },  function(err, response){
             if (err) {
