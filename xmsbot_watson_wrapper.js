@@ -39,12 +39,14 @@ sendMessage = function(userMessage, resetLiterals, context, done) {
         context["literal_key"] = "";
         context["literal_value"] = "";
     }
-    var sanitizedUserMessage = userMessage.replace(/[\u201C\u201D]/g, '"');
+
+    if(userMessage != undefined) {
+        var sanitizedUserMessage = userMessage.replace(/[\u201C\u201D]/g, '"');
+    }
 
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': sanitizedUserMessage},
-        // input:{'text': userMessage},
         context: context
         },  function(err, response){
             if (err) {
