@@ -17,6 +17,7 @@ var oldSynonym = "";
 var image_url = "";
 var paramNum = 0;
 var resetLiterals = 0;
+var wait = 0;
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
@@ -117,6 +118,13 @@ function postOrderBotData(key, value) {
       console.log("Order Error: "+error);
     }
   });
+}
+
+function pauseMessage(response, message) {
+  return function() {
+    rtm.sendMessage(response[1], message.channel);
+    wait = 0;
+  }
 }
 
 init();
@@ -225,7 +233,15 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
             response = watson_response.response;
           }
           for(var index in response) {
-            rtm.sendMessage(response[index], message.channel);
+            if(response[index].includes("couple minutes")){
+              wait = 1;
+              var time_to_sleep = Math.floor(Math.random() * 5 + 5);
+              rtm.sendMessage(response[index], message.channel);
+              setTimeout(pauseMessage(response, message), time_to_sleep * 1000);
+            }
+            else if(wait == 0){
+              rtm.sendMessage(response[index], message.channel);
+            }
           }
         }
       }
