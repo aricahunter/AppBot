@@ -122,7 +122,7 @@ function postOrderBotData(key, value) {
 
 function pauseMessage(response, message) {
   return function() {
-    rtm.sendMessage(response[1], message.channel);
+    rtm.sendMessage(response, message.channel);
     wait = 0;
   }
 }
@@ -237,7 +237,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
               wait = 1;
               var time_to_sleep = Math.floor(Math.random() * 5 + 5);
               rtm.sendMessage(response[index], message.channel);
-              setTimeout(pauseMessage(response, message), time_to_sleep * 1000);
+              setTimeout(pauseMessage(response[parseInt(index)+1], message), time_to_sleep * 1000);
             }
             else if(wait == 0){
               rtm.sendMessage(response[index], message.channel);
