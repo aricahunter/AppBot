@@ -120,9 +120,9 @@ function postOrderBotData(key, value) {
   });
 }
 
-function pauseMessage(response, message) {
+function pauseMessage(responseString, message) {
   return function() {
-    rtm.sendMessage(response, message.channel);
+    rtm.sendMessage(responseString, message.channel);
     wait = 0;
   }
 }
