@@ -120,6 +120,18 @@ function postOrderBotData(key, value) {
   });
 }
 
+function postChange(userID, element, time){
+  request({
+    url: "https://chatbot-xms-demo-middleware.herokuapp.com/history",
+    method: "POST",
+    json: {"user": userID, "element": element, "time": time}
+  }, function(error, response, body) {
+    if(error){
+      console.log("Error updating history: " + error);
+    }
+  });
+}
+
 function pauseMessage(responseString, message) {
   return function() {
     rtm.sendMessage(responseString, message.channel);
@@ -141,10 +153,15 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If user greets the bot, assume that the user is starting to create a new bot, and
         //everything should be reset
         for(var k in watson_response["intents"]) {
-          if(watson_response["intents"][k]["intent"] == "Create") {
+          if(watson_response["intents"][k]["intent"] == "Create"){
             deleteXmsData();
             numImage = 0;
             image_url = "";
+          }
+
+          if(watson_response["intents"][k]["intent"] == "Change"){
+            var timestamp = new Date();
+            postChange(message.user, watson_response["entities"][0]["value"], timestamp);
           }
         }
 
