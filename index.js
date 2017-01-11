@@ -18,6 +18,14 @@ var image_url = "";
 var paramNum = 0;
 var resetLiterals = 0;
 var wait = 0;
+var historyLog = [
+                    {"user": null, "element": "server-restart", "time": new Date()},
+                    {"user": null, "element": "server-restart", "time": new Date()},
+                    {"user": null, "element": "server-restart", "time": new Date()},
+                    {"user": null, "element": "server-restart", "time": new Date()},
+                    {"user": null, "element": "server-restart", "time": new Date()}
+                 ];
+var historyChangeAuthor = "";
 
 function init(){
   WatsonWrapper.initConversation( function(error, responseContext) {
@@ -38,7 +46,8 @@ function getImages(message, text, watson_response) {
   });
 }
 
-function postXmsData(key, value) {
+function postXmsData(key, value, user) {
+  historyChangeAuthor = user;
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
@@ -50,7 +59,8 @@ function postXmsData(key, value) {
   });
 }
 
-function postXMSImage(key, image_url) {
+function postXMSImage(key, image_url, user) {
+  historyChangeAuthor = user;
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
@@ -62,7 +72,8 @@ function postXMSImage(key, image_url) {
   });
 }
 
-function postSynonyms(synonym){
+function postSynonyms(synonym, user){
+  historyChangeAuthor = user;
   request({
     url: "http://chatbot-xms-demo-middleware.herokuapp.com/synonyms",
     method: "POST",
@@ -74,7 +85,8 @@ function postSynonyms(synonym){
   });
 }
 
-function postLiteralKey(key, value) {
+function postLiteralKey(key, value, user) {
+  historyChangeAuthor = user;
   request({
     url: "https://chatbot-xms-demo-middleware.herokuapp.com/xms",
     method: "POST",
@@ -120,16 +132,11 @@ function postOrderBotData(key, value) {
   });
 }
 
-function postChange(userID, element, time){
-  request({
-    url: "https://chatbot-xms-demo-middleware.herokuapp.com/history",
-    method: "POST",
-    json: {"user": userID, "element": element, "time": time}
-  }, function(error, response, body) {
-    if(error){
-      console.log("Error updating history: " + error);
-    }
-  });
+function postHistoryLog(userID, element, time){
+  var entry = {"user": userID, "element": element, "time": time};
+  historyLog.unshift(entry);
+  historyLog.pop();
+  console.log(historyLog);
 }
 
 function pauseMessage(responseString, message) {
@@ -142,7 +149,7 @@ function pauseMessage(responseString, message) {
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  WatsonWrapper.sendMessage(message.text, resetLiterals, context, function(err, watson_response) {
+  WatsonWrapper.sendMessage(message.text, resetLiterals, context, historyLog, message.user, function(err, watson_response) {
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
         rtm.sendMessage("Error asking watson", message.channel);
@@ -157,11 +164,6 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
             deleteXmsData();
             numImage = 0;
             image_url = "";
-          }
-
-          if(watson_response["intents"][k]["intent"] == "Change"){
-            var timestamp = new Date();
-            postChange(message.user, watson_response["entities"][0]["value"], timestamp);
           }
         }
 
@@ -182,14 +184,16 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         //If the user accepted an image
         if(watson_response["context"]["create_image"] == 2) {
           var key = ["splash-image", "url"];
-          postXMSImage(key, image_url);
+          postXMSImage(key, image_url, message.user);
+          postHistoryLog(historyChangeAuthor, "image", new Date());
           numImage = 0;
         }
 
         //If the user wanted to change using a literal key
-        if(watson_response["context"]["literal_key"] != "" && watson_response["context"]["literal_value"] != "") {
+        if(watson_response["context"]["literal_key"] != "" && watson_response["context"]["literal_key"] != null && watson_response["context"]["literal_value"] != "" && watson_response["context"]["literal_value"] != null) {
           var literals_context = watson_response["context"];
-          postLiteralKey(literals_context["literal_key"], literals_context["literal_value"]);
+          postLiteralKey(literals_context["literal_key"], literals_context["literal_value"], message.user);
+          postHistoryLog(historyChangeAuthor, literals_context["literal_key"], new Date());
           resetLiterals = 1;
         }
 
@@ -218,7 +222,8 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
         //If the user wants to add a synonym
         if(context["synonym_to_add"] != oldSynonym && context["synonym_to_add"] != "") {
-          postSynonyms(context["synonym_to_add"]);
+          postSynonyms(context["synonym_to_add"], message.user);
+          postHistoryLog(historyChangeAuthor, "synonym", new Date());
           oldSynonym = context["synonym_to_add"];
           response = watson_response.response;
           for(var index in response) {
@@ -228,10 +233,18 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
         //If user accepted an image, then
         else{
+          var initialCreate = 0;
           for(var k in context) {
-            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && k != "create_image" && k != "literal_key" && k != "literal_value" && context[k] != oldContext[k]){
+            if (k != "conversation_id" && k != "system"  && k != "synonym_to_add" && k != "create_image" && k != "literal_key" && k != "literal_value"  && k != "history_log" && context[k] != oldContext[k]){
               try{
-                postXmsData(k, context[k]);
+                postXmsData(k, context[k], message.user);
+                if(watson_response["intents"][0]["intent"] == "Create" && initialCreate == 0){
+                  postHistoryLog(historyChangeAuthor, "create-app", new Date());
+                  initialCreate = 1;
+                }
+                else if(watson_response["intents"][0]["intent"] != "Create"){
+                  postHistoryLog(message.user, k, new Date());
+                }
                 postOrderBotData(k, context[k]);
               }
               catch(err) {

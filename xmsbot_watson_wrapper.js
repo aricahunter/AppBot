@@ -32,9 +32,11 @@ initConversation = function(done) {
     });
 }
 
-sendMessage = function(userMessage, resetLiterals, context, done) {
+sendMessage = function(userMessage, resetLiterals, context, historyLog, userID, done) {
     context["fulfilled_orders"] = ordersFulfilled;
     context["canceled_orders"] = ordersCanceled;
+    context["history_log"] = historyLog;
+    context["user_id"] = userID;
     if(resetLiterals == 1){
         context["literal_key"] = "";
         context["literal_value"] = "";
