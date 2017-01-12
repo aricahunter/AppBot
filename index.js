@@ -17,7 +17,6 @@ var image_url = "";
 var paramNum = 0;
 var resetLiterals = 0;
 var wait = 0;
-<<<<<<< HEAD
 var historyLog = [
                     {"user": null, "element": "server-restart", "time": new Date()},
                     {"user": null, "element": "server-restart", "time": new Date()},
@@ -26,10 +25,8 @@ var historyLog = [
                     {"user": null, "element": "server-restart", "time": new Date()}
                  ];
 var historyChangeAuthor = "";
-=======
 var userIDConversationID = [];
 var initialContext;
->>>>>>> master
 
 function init(message){
   var context;
@@ -170,9 +167,6 @@ function newUser(userToCheck) {
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-<<<<<<< HEAD
-  WatsonWrapper.sendMessage(message.text, resetLiterals, context, historyLog, message.user, function(err, watson_response) {
-=======
   if(newUser(message.user)){
     userIDConversationID.push({"user": message.user, "context": initialContext});
     init(message);
@@ -185,9 +179,8 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
     }
   }
 
-  WatsonWrapper.sendMessage(message, userIDConversationID, resetLiterals, context, function(err, watson_response) {
+  WatsonWrapper.sendMessage(message, userIDConversationID, resetLiterals, historyLog, context, function(err, watson_response) {
     // console.log(JSON.stringify(context, null, 2));
->>>>>>> master
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
         rtm.sendMessage("Error asking watson", message.channel);

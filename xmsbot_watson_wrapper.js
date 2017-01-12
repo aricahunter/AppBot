@@ -32,19 +32,13 @@ initConversation = function(done) {
     });
 }
 
-<<<<<<< HEAD
-sendMessage = function(userMessage, resetLiterals, context, historyLog, userID, done) {
+sendMessage = function(message, idDictionary, resetLiterals, historyLog, context, done) {
+    // console.log("here in send message. here is the context: " + JSON.stringify(context, null, 2));
     context["fulfilled_orders"] = ordersFulfilled;
     context["canceled_orders"] = ordersCanceled;
     context["history_log"] = historyLog;
     context["user_id"] = userID;
-=======
-sendMessage = function(message, idDictionary, resetLiterals, context, done) {
-    // console.log("here in send message. here is the context: " + JSON.stringify(context, null, 2));
-    context["fulfilled_orders"] = ordersFulfilled;
-    context["canceled_orders"] = ordersCanceled;
     
->>>>>>> master
     if(resetLiterals == 1){
         context["literal_key"] = "";
         context["literal_value"] = "";
