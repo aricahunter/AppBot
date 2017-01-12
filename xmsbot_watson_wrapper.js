@@ -32,17 +32,26 @@ initConversation = function(done) {
     });
 }
 
+<<<<<<< HEAD
 sendMessage = function(userMessage, resetLiterals, context, historyLog, userID, done) {
     context["fulfilled_orders"] = ordersFulfilled;
     context["canceled_orders"] = ordersCanceled;
     context["history_log"] = historyLog;
     context["user_id"] = userID;
+=======
+sendMessage = function(message, idDictionary, resetLiterals, context, done) {
+    // console.log("here in send message. here is the context: " + JSON.stringify(context, null, 2));
+    context["fulfilled_orders"] = ordersFulfilled;
+    context["canceled_orders"] = ordersCanceled;
+    
+>>>>>>> master
     if(resetLiterals == 1){
         context["literal_key"] = "";
         context["literal_value"] = "";
     }
 
-    if(userMessage != undefined) {
+    if(message.text != undefined) {
+        var userMessage = message.text;
         var sanitizedUserMessage = userMessage.replace(/[\u201C\u201D]/g, '"');
     }
 
@@ -56,14 +65,15 @@ sendMessage = function(userMessage, resetLiterals, context, historyLog, userID, 
                 done(err);
             }
             else{
+                // console.log("The conversation is happening on id: " + response["context"]["conversation_id"]);
                 var responseArray = response["output"]["text"];
                 if(response["output"]["text"].length == 0) {
                   responseStrings = [];
                 }
                 else {
                   responseString = response["output"]["text"];
-                  console.log("Fulfilled: ", response["context"]["fulfilled_orders"]);
-                  console.log("Canceled: ", response["context"]["canceled_orders"]);
+                  // console.log("Fulfilled: ", response["context"]["fulfilled_orders"]);
+                  // console.log("Canceled: ", response["context"]["canceled_orders"]);
                 }
                 done(null, {
                     context: response["context"],
