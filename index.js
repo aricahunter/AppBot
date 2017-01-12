@@ -10,7 +10,6 @@ var google_token = process.env.GOOGLE_SEARCH_KEY;
 var rtm = new RtmClient(bot_token);
 console.log("Starting chatbot...");
 rtm.start();
-var context;
 var oldContext;
 var numImage = 0;
 var oldSynonym = "";
@@ -18,12 +17,22 @@ var image_url = "";
 var paramNum = 0;
 var resetLiterals = 0;
 var wait = 0;
+var userIDConversationID = [];
+var initialContext;
 
-function init(){
-  WatsonWrapper.initConversation( function(error, responseContext) {
+function init(message){
+  var context;
+  WatsonWrapper.initConversation(function(error, responseContext) {
     context = responseContext;
     oldContext = responseContext;
     oldSynonym = responseContext["synonym_to_add"];
+    initialContext = context;
+    for(var k in userIDConversationID){
+      if(userIDConversationID[k]["user"] == message.user){
+        userIDConversationID[k]["context"] = context;
+        console.log("new user with ID: " + userIDConversationID[k]["user"]);
+      }
+    }
   });
 }
 
@@ -127,17 +136,45 @@ function pauseMessage(responseString, message) {
   }
 }
 
+function newUser(userToCheck) {
+  for(var k in userIDConversationID){
+    if(userIDConversationID[k]["user"] == userToCheck) {
+      return false;
+    }
+  }
+  return true;
+}
+
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  WatsonWrapper.sendMessage(message.text, resetLiterals, context, function(err, watson_response) {
+  if(newUser(message.user)){
+    userIDConversationID.push({"user": message.user, "context": initialContext});
+    init(message);
+  }
+
+  var context;
+  for(let k in userIDConversationID){
+    if(message.user == userIDConversationID[k]["user"]){
+      context = userIDConversationID[k]["context"];
+    }
+  }
+
+  WatsonWrapper.sendMessage(message, userIDConversationID, resetLiterals, context, function(err, watson_response) {
+    // console.log(JSON.stringify(context, null, 2));
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
         rtm.sendMessage("Error asking watson", message.channel);
       }
 
       else{
-        context = watson_response.context;
+        for(let k in userIDConversationID){
+          if(message.user == userIDConversationID[k]["user"]){
+            userIDConversationID[k]["context"] = watson_response.context;
+            context = userIDConversationID[k]["context"];
+          }
+        }
+
         //If user greets the bot, assume that the user is starting to create a new bot, and
         //everything should be reset
         for(var k in watson_response["intents"]) {
