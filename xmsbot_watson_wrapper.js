@@ -32,12 +32,12 @@ initConversation = function(done) {
     });
 }
 
-sendMessage = function(message, idDictionary, resetLiterals, historyLog, context, done) {
+sendMessage = function(message, idDictionary, resetLiterals, context, historyLog, done) {
     // console.log("here in send message. here is the context: " + JSON.stringify(context, null, 2));
     context["fulfilled_orders"] = ordersFulfilled;
     context["canceled_orders"] = ordersCanceled;
     context["history_log"] = historyLog;
-    context["user_id"] = userID;
+    context["user_id"] = message.user;
     
     if(resetLiterals == 1){
         context["literal_key"] = "";
@@ -55,7 +55,7 @@ sendMessage = function(message, idDictionary, resetLiterals, historyLog, context
         context: context
         },  function(err, response){
             if (err) {
-                console.log(err);
+                console.log(JSON.stringify(err));
                 done(err);
             }
             else{

@@ -179,7 +179,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
     }
   }
 
-  WatsonWrapper.sendMessage(message, userIDConversationID, resetLiterals, historyLog, context, function(err, watson_response) {
+  WatsonWrapper.sendMessage(message, userIDConversationID, resetLiterals, context, historyLog, function(err, watson_response) {
     // console.log(JSON.stringify(context, null, 2));
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
@@ -279,7 +279,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
                   postHistoryLog(historyChangeAuthor, "create-app", new Date());
                   initialCreate = 1;
                 }
-                else if(watson_response["intents"][0]["intent"] != "Create"){
+                else if(watson_response["intents"][0]["intent"] != "Create" && k != "userID" && k != "canceled_orders" && k != "fulfilled_orders"){
                   postHistoryLog(message.user, k, new Date());
                 }
                 postOrderBotData(k, context[k]);
