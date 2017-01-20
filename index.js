@@ -153,15 +153,17 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
     init(message);
   }
 
-  var context;
+  var context = {};
   for(let k in userIDConversationID){
     if(message.user == userIDConversationID[k]["user"]){
       context = userIDConversationID[k]["context"];
     }
   }
+  if(context == {} ){
+    context = oldContext;
+  }
 
   WatsonWrapper.sendMessage(message, userIDConversationID, resetLiterals, context, function(err, watson_response) {
-    // console.log(JSON.stringify(context, null, 2));
     if (message.username != "slackbot" && message["subtype"] != "message_changed" && message.user != "U3C0T7ZDH") {
       if (err) {
         rtm.sendMessage("Error asking watson", message.channel);

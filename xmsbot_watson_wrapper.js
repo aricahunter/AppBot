@@ -12,9 +12,7 @@ var conversation = watson.conversation({
 var webFulfilled = facebookFulfilled = smsFulfilled = alexaFulfilled = iosFulfilled = 0;
 var webCanceled = facebookCanceled = smsCanceled = alexaCanceled = iosCanceled = 0;
 
-initConversation = function(done) {
-    ordersFulfilled = 0;
-    ordersCanceled = 0;
+initConversation = function(done) { 
     conversation.message({
         workspace_id: process.env.WATSON_WORKSPACE,
         input: {'text': ''},
@@ -34,8 +32,8 @@ initConversation = function(done) {
 
 sendMessage = function(message, idDictionary, resetLiterals, context, done) {
     // console.log("here in send message. here is the context: " + JSON.stringify(context, null, 2));
-    context["facebook_fulfilled_orders"] = facebookFulfilled;
     context["web_fulfilled_orders"] = webFulfilled;
+    context["facebook_fulfilled_orders"] = facebookFulfilled;
     context["sms_fulfilled_orders"] = smsFulfilled;
     context["alexa_fulfilled_orders"] = alexaFulfilled;
     context["ios_fulfilled_orders"] = iosFulfilled;
@@ -44,8 +42,6 @@ sendMessage = function(message, idDictionary, resetLiterals, context, done) {
     context["sms_canceled_orders"] = smsCanceled;
     context["alexa_canceled_orders"] = alexaCanceled;
     context["ios_canceled_orders"] = iosCanceled;
-    
-    console.log("here is the context: " + JSON.stringify(context, null, 2));
 
     if(resetLiterals == 1){
         context["literal_key"] = "";
