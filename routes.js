@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 app.post('/posts', function(request, response){
   try{
     response.status(200);
+    console.log("here is the request body: " + JSON.stringify(request.body));
     WatsonWrapper.updateAnalytics(request.body);
     response.send("");
   } catch (err){
