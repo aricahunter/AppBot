@@ -45,8 +45,8 @@ sendMessage = function(message, idDictionary, resetLiterals, context, done) {
     context["alexa_canceled_orders"] = alexaCanceled;
     context["ios_canceled_orders"] = iosCanceled;
     
-    console.log("here is the number of web order: " + context["web_fulfilled_orders"]);
-    
+    console.log("here is the context: " + JSON.stringify(context, null, 2));
+
     if(resetLiterals == 1){
         context["literal_key"] = "";
         context["literal_value"] = "";
