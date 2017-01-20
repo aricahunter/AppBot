@@ -11,7 +11,7 @@ app.post('/posts', function(request, response){
     response.status(200);
     var fulfilledOrders = request.body.fulfilledOrders;
     var canceledOrders = request.body.canceledOrders;
-    console.log(JSON.stringify(request, null, 2));
+    console.log(JSON.stringify(request.body, null, 2));
     WatsonWrapper.updateAnalytics(fulfilledOrders, canceledOrders);
     response.send("");
   } catch (err){
