@@ -34,8 +34,8 @@ initConversation = function(done) {
 
 sendMessage = function(message, idDictionary, resetLiterals, context, done) {
     // console.log("here in send message. here is the context: " + JSON.stringify(context, null, 2));
-    context["web_fulfilled_orders"] = webFulfilled;
     context["facebook_fulfilled_orders"] = facebookFulfilled;
+    context["web_fulfilled_orders"] = webFulfilled;
     context["sms_fulfilled_orders"] = smsFulfilled;
     context["alexa_fulfilled_orders"] = alexaFulfilled;
     context["ios_fulfilled_orders"] = iosFulfilled;
