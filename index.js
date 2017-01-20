@@ -221,6 +221,10 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
         for(var k in watson_response["intents"]) {
           if(watson_response["intents"][k]["intent"] == "Analytics") {
             for(var j in watson_response["entities"]) {
+              if(watson_response["entities"][j]["entity"] == "source") {
+                var dataSource = watson_response["entities"][j]["value"];
+              }
+
               if(watson_response["entities"][j]["value"] == "delivered") {
                 var url = "http://chatbot-xms-demo-middleware.herokuapp.com/order-fulfilled-analytics-chart" + "?param=" + paramNum;
                 rtm.sendMessage(url, message.channel);

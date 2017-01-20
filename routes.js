@@ -6,10 +6,12 @@ var app = express();
 app.use(bodyParser.json());
 
 app.post('/posts', function(request, response){
+  console.log('here in the post');
   try{
     response.status(200);
     var fulfilledOrders = request.body.fulfilledOrders;
     var canceledOrders = request.body.canceledOrders;
+    console.log(JSON.stringify(request, null, 2));
     WatsonWrapper.updateAnalytics(fulfilledOrders, canceledOrders);
     response.send("");
   } catch (err){
