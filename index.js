@@ -148,7 +148,7 @@ function newUser(userToCheck) {
 init();
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message) {
-  if(newUser(message.user)){
+  if(newUser(message.user) && message.user != null){
     userIDConversationID.push({"user": message.user, "context": initialContext});
     init(message);
   }
