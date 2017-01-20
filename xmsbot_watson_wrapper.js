@@ -9,8 +9,8 @@ var conversation = watson.conversation({
     version_date: '2016-09-20'
 });
 
-var ordersFulfilled = 0;
-var ordersCanceled = 0;
+var webFulfilled = facebookFulfilled = smsFulfilled = alexaFulfilled = iosFulfilled = 0;
+var webCanceled = facebookCanceled = smsCanceled = alexaCanceled = iosCanceled = 0;
 
 initConversation = function(done) {
     ordersFulfilled = 0;
@@ -34,8 +34,16 @@ initConversation = function(done) {
 
 sendMessage = function(message, idDictionary, resetLiterals, context, done) {
     // console.log("here in send message. here is the context: " + JSON.stringify(context, null, 2));
-    context["fulfilled_orders"] = ordersFulfilled;
-    context["canceled_orders"] = ordersCanceled;
+    context["web_fulfilled_orders"] = webFulfilled;
+    context["facebook_fulfilled_orders"] = facebookFulfilled;
+    context["sms_fulfilled_orders"] = smsFulfilled;
+    context["alexa_fulfilled_orders"] = alexaFulfilled;
+    context["ios_fulfilled_orders"] = iosFulfilled;
+    context["web_canceled_orders"] = webCanceled;
+    context["facebook_canceled_orders"] = facebookCanceled;
+    context["sms_canceled_orders"] = smsCanceled;
+    context["alexa_canceled_orders"] = alexaCanceled;
+    context["ios_canceled_orders"] = iosCanceled;
     
     if(resetLiterals == 1){
         context["literal_key"] = "";
@@ -77,9 +85,21 @@ sendMessage = function(message, idDictionary, resetLiterals, context, done) {
     });
 }
 
-updateAnalytics = function(fulfilled, canceled) {
-    ordersFulfilled = fulfilled;
-    ordersCanceled = canceled;
+updateAnalytics = function(requestBody) {
+    var fulfilled = requestBody["fulfilledOrders"];
+    var canceled = requestBody["canceledOrders"];
+
+    webFulfilled = fulfilled["web"];
+    facebookFulfilled = fulfilled["facebook"];
+    smsFulfilled = fulfilled["sms"];
+    alexaFulfilled = fulfilled["alexa"];
+    iosFulfilled = fulfilled["ios"];
+
+    webCanceled = canceled["web"];
+    facebookCanceled = canceled["facebook"];
+    smsCanceled = canceled["sms"];
+    alexaCanceled = canceled["alexa"];
+    iosCanceled = canceled["ios"];
 }
 
 module.exports = {
