@@ -67,11 +67,11 @@ sendMessage = function(message, idDictionary, resetLiterals, context, done) {
             else{
                 // console.log("The conversation is happening on id: " + response["context"]["conversation_id"]);
                 var responseArray = response["output"]["text"];
-                if(response["output"]["text"].length == 0) {
+                if(responseArray.length == 0) {
                   responseStrings = [];
                 }
                 else {
-                  responseString = response["output"]["text"];
+                  responseStrings = response["output"]["text"];
                   // console.log("Fulfilled: ", response["context"]["fulfilled_orders"]);
                   // console.log("Canceled: ", response["context"]["canceled_orders"]);
                 }
@@ -79,7 +79,7 @@ sendMessage = function(message, idDictionary, resetLiterals, context, done) {
                     context: response["context"],
                     entities: response["entities"],
                     intents: response["intents"],
-                    response: responseString
+                    response: responseStrings
                 });
             }
     });
