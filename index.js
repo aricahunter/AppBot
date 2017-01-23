@@ -221,22 +221,27 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message) {
 
         // //If the user wants to see analytics graphs
         for(var k in watson_response["intents"]) {
-          if(watson_response["intents"][k]["intent"] == "Analytics") {
-            for(var j in watson_response["entities"]) {
-              if(watson_response["entities"][j]["entity"] == "source") {
-                var dataSource = watson_response["entities"][j]["value"];
-              }
+          //url: "http://chatbot-xms-demo-middleware.herokuapp.com/order-fulfilled-analytics-chart" + "?param=" + paramNum + "?source=" + source
+          //source tag exists
+          for(var j in watson_response["entities"]) {
+            if(watson_response["entities"][j]["entity"] == "source") {
+              var source = watson_response["entities"][j]["value"];
+              if(watson_response["entities"].length > 1){
+                for(var l in watson_response["entities"]) {
+                  if(watson_response["entities"][l]["entity"] == "data_type") {
+                    if(watson_response["entities"][l]["value"] == "delivered") {
+                      var url = "http://chatbot-xms-demo-middleware.herokuapp.com/order-fulfilled-analytics-chart?param=" + paramNum + "?source=" + source;
+                      paramNum++;
+                      rtm.sendMessage(url, message.channel);
+                    }
 
-              if(watson_response["entities"][j]["value"] == "delivered") {
-                var url = "http://chatbot-xms-demo-middleware.herokuapp.com/order-fulfilled-analytics-chart" + "?param=" + paramNum;
-                rtm.sendMessage(url, message.channel);
-                paramNum++;
-              }
-
-              if(watson_response["entities"][j]["value"] == "canceled") {
-                var url = "http://chatbot-xms-demo-middleware.herokuapp.com/order-canceled-analytics-chart" + "?param=" + paramNum;
-                rtm.sendMessage(url, message.channel);
-                paramNum++;
+                    if(watson_response["entities"][l]["value"] == "canceled") {
+                      var url = "http://chatbot-xms-demo-middleware.herokuapp.com/order-canceled-analytics-chart?param=" + paramNum + "?source=" + source;
+                      paramNum++;
+                      rtm.sendMessage(url, message.channel);
+                    }
+                  }
+                }
               }
             }
           }
